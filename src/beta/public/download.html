@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Document</title>
+	<link rel="stylesheet" href="./styles/download.css" />
+</head>
+
+<body>
+	<section id="navigation">
+		<div style="padding: 16px">
+			<h1>Christ Youtube 📺<span style="font-size: 10px;vertical-align: text-top;">beta</span></h1>
+		</div>
+	</section>
+
+	<section id="loader">
+		<p style="color: white">Loading...</p>
+	</section>
+
+	<section id="body" style="visibility: hidden;"">
+			<div class=" details">
+		<img alt="thumbnail" class="thumbnail" />
+		<div style="width: 16px"></div>
+
+		<div class="video_details">
+			<h2 class="video_details-title"></h2>
+			<h6 class="video_details-channelname"></h6>
+		</div>
+		</div>
+		<br />
+		<br />
+
+		<div class="available_options-wrapper">
+			<select name="available_options" id="available_options"></select>
+		</div>
+		<br />
+		<button type="button" id="download_btn">Watch</button>
+	</section>
+
+	<section id="footer">
+		<div style="padding: 16px; text-align: center">
+			<p>
+				©2021 - DNDYoutube, dndyoutube.com.
+				<br />
+				<!-- <a href="#" style="color: rgb(134, 134, 134)">Terms &amp; Conditions</a>,
+				<a href="#" style="color: rgb(134, 134, 134)">Privacy</a> -->
+			</p>
+		</div>
+	</section>
+
+	<script>
+		var url = new URL(window.location.href);
+		var yturl = url.searchParams.get("url");
+
+		// Elements
+		const body = document.getElementById("body");
+		const loader = document.getElementById("loader");
+		const select = document.getElementById("available_options");
+		const downloadbtn = document.getElementById("download_btn");
+		const thumbnail = document.querySelector(".thumbnail");
+		const title = document.querySelector(".video_details-title");
+		const channelname = document.querySelector(".video_details-channelname");
+
+		// Download Button Listener
+		downloadbtn.addEventListener("click", (e) => {
+			console.log()
+			const f = JSON.parse(select.value);
+			window.open(
+				`${window.location.origin}/view?url=${f.url}&itag=${f.itag}`
+			);
+		});
+
+		async function getVideo() {
+			fetch("/info?url=" + yturl)
+				.then((resp) => resp.json())
+				.then((res) => {
+					loader.style.visibility = "hidden";
+					loader.style.height = "0px";
+					body.style.visibility = "visible";
+					if (res.message && res.message === "Video unavailable") {
+						return (body.innerHTML =
+							'<p style="color: white">Invalid YouTube URL!</p>');
+					}
+					thumbnail.src = res.videoDetails.thumbnails[0].url;
+					title.innerHTML = res.videoDetails.title;
+					channelname.innerHTML = res.videoDetails.author.name;
+					handleOption(res.formats);
+				});
+		}
+		getVideo();
+
+		function handleOption(formatsList) {
+			let formats = [];
+			formatsList.forEach((f, i) => {
+				if (f.hasAudio && f.hasVideo) {
+					formats.push(f);
+					formatsList.splice(i, 1);
+				}
+			});
+			formats.push(...formatsList);
+			formats.forEach((f) => {
+				var option = document.createElement("option");
+				if (f.qualityLabel == null && f.hasAudio) {
+					option.text = `Audio ${f.audioBitrate + "fps"}`;
+				} else {
+					option.text = `${f.container + " " + f.qualityLabel + (f.hasAudio ? "" : " 🔇")
+						}`;
+				}
+				option.value = JSON.stringify({ itag: f.itag, url: yturl })
+				select.add(option);
+			});
+		}
+	</script>
+</body>
+
+</html>

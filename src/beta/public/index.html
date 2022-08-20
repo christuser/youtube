@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>DNDYoutube</title>
+	<link rel="stylesheet" href="./styles/index.css" />
+</head>
+
+<body>
+	<section id="navigation">
+		<div style="padding: 16px">
+			<h1>
+				DNDYoutube 📺<span style="font-size: 10px; vertical-align: text-top">beta</span>
+			</h1>
+		</div>
+	</section>
+
+	<section id="header">
+		<h1>YouTube Video Downloader</h1>
+		<br />
+		<br />
+		<form id="form" onsubmit="submit()">
+			<div style="display: flex; align-items: center">
+				<input autofocus type="url" placeholder="Paste your YouTube link here" required id="input" />
+				<button id="submit-btn">Watch ✔️</button>
+			</div>
+		</form>
+	</section>
+
+	<section id="footer">
+		<div style="padding: 16px; text-align: center">
+			<p>
+				©2021 - DNDYoutube, dndyoutube.com.
+				<br />
+				<a href="#" style="color: rgb(134, 134, 134)">Terms &amp; Conditions</a>,
+				<a href="#" style="color: rgb(134, 134, 134)">Privacy</a>
+			</p>
+		</div>
+	</section>
+	<script>
+		// Elements
+		const form = document.getElementById("form");
+		const input = document.getElementById("input");
+		const button = document.getElementById("submit-btn");
+
+		form.addEventListener("submit", (e) => {
+			e.preventDefault();
+			var url = new URL(input.value);
+			var v = url.searchParams.get("v");
+			window.location.href = "/watch?url=" + input.value;
+		});
+	</script>
+</body>
+
+</html>
